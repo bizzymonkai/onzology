@@ -62,7 +62,7 @@ These are design constraints, not aspirations. A change that breaks one of them 
 
 - No administrators and no gatekeepers. Participation does not depend on a registrar, a permit, or a platform account.
 - Peer-to-peer by structure, not by slogan. A required relay, indexer, or operator is an adapter under test, not the protocol.
-- Encrypted by default. Publication is explicit. Hashing a tag while sending the body is not encryption.
+- Private by default. Publication is explicit, and in this version a published note is public. Hashing a tag while sending the body is not encryption.
 - Rules, not rulers. Order comes from explicit records and peer challenge, not from a higher authority inside the protocol.
 - Collaboration of records, not a central registration.
 - Endorsements and peer advocacy, not licenses or permits, as the trust signal.
