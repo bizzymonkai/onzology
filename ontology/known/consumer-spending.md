@@ -2,19 +2,22 @@
 
 A known vocabulary. Source: [Consumer Spending Ontology for P2P Credit Networks, version 1.0](https://monkeypanel.com/ontology.html) (MonkeyPanel).
 
-It classifies what a situation is about: food, shelter, a ride, a gift. It is not the Onzology model, and it does not decide who owes whom.
+It classifies what a situation is about: food, shelter, a ride, a gift.
 
 ## Kept
 
-The categories below, and the cross-cutting words for time, social context, and risk. A record may use them. A record may ignore them. An unmatched word is allowed. This list is not closed, and it does not have to classify every situation.
+The categories below, and the cross-cutting words for time, social context, and risk. A record may use them. A record may ignore them. An unmatched word is allowed.
 
-## Not kept
+## How a category is used
 
-- Creditor and debtor as facts created by logging an expense. Naming another identity is not that identity's assent. An offer may receive zero acceptances. Mutual assent still requires every required party.
-- Settlement terms, a priority class, and a dispute-eligibility flag as fields every record must carry. A disputed claim can be published even if someone called the situation non-disputable.
-- Trust scores, penalties, staked mediators, and a ruling that the loser pays. Those are rulers.
-- A miscellaneous bin that waits on manual review. Unclassified is a normal state.
-- The page's random lifecycle, which opens a debt when one party logs an expense and invites the others. That invitation is a claim. It is not an agreement.
+A category names the subject of a situation. Who owes whom is a separate record: a claim, an offer, or assent signed by each required party.
+
+- The identity who logs an expense publishes a claim.
+- Each other identity assents with a record of their own. An offer may receive zero acceptances.
+- Settlement terms and priority, when present, are words in that record. A dispute is its own record.
+- Trust, when recorded, is an endorsement one identity signs about another.
+- A word that fits no category stays unclassified.
+- An invitation to split a bill is a claim. An agreement is mutual assent by every required party.
 
 The source skips section 5. That gap is left as it was.
 
@@ -356,7 +359,7 @@ The source skips section 5. That gap is left as it was.
 
 ## 2.13 GIFTS & GRATUITIES
 
-*Voluntary transfers without expectation of equivalent return*
+*A voluntary transfer from the giver*
 
 ### 2.13.1 Social Obligations
 
@@ -402,7 +405,7 @@ The source skips section 5. That gap is left as it was.
 
 # Cross-cutting descriptions
 
-Optional. Not required fields.
+A record may use these words and may leave them out.
 
 ## 3.1 Temporal Characteristics
 
@@ -414,7 +417,7 @@ Optional. Not required fields.
 ## 3.2 Social Context
 
 - **Group Expense.** Split among multiple parties (even or uneven)
-- **Gift.** Third-party beneficiary, giver not receiver
+- **Gift.** The giver pays for someone else.
 - **Reimbursement.** Repayment for previously fronted expense
 - **Allowance.** Regular transfer to dependent
 
@@ -427,7 +430,7 @@ Optional. Not required fields.
 
 # Edge cases in the source
 
-Kept as words a peer might use. Onzology does not adopt a legality classifier, and it does not require any of these. The source's line "ensure zero unclassified transactions" is rejected. Unclassified is allowed.
+Peers may use these words. A situation with no category stays unclassified.
 
 ## 4.1 Cryptocurrency & Digital Assets
 
@@ -445,11 +448,11 @@ Kept as words a peer might use. Onzology does not adopt a legality classifier, a
 
 - **Miscellaneous.** Any transaction defying above categories (requires manual review flag)
 - **Adjustment.** Corrections, refunds, currency conversion adjustments, fees
-- **Inter-Node Transfers.** Movement between accounts of same entity (not spending)
+- **Inter-Node Transfers.** Movement between accounts of the same entity.
 
 # What the source claimed to cover
 
-The author's checklist, not a requirement of this repository.
+The author's checklist.
 
 - **✅ Maslow's Hierarchy.** Physiological (food, shelter) through self-actualization (education, hobbies)
 - **✅ Life Stages.** Childhood (dependents) through elder care
