@@ -40,7 +40,7 @@ These are design constraints, not aspirations. A change that breaks one of them 
 - The object and relationship model is independent of any note editor.
 - Ontology definitions are versioned, extensible, and tested on their own.
 - Transport encoding is an adapter. Nostr, mesh, HTTP, and local storage do not define the objects.
-- Identity, peer, account, object, and address stay distinct concepts.
+- A device is hardware. A peer is the wide-area address the network assigns to that device, usually TCP/IP. An identity is one signing key. An account is a child identity, not a login. Objects stay distinct from all of those.
 - A signature establishes who asserted something. It does not establish that the assertion is true.
 - Personal knowledge management, dashboards, browser agents, and marketplace screens are applications. They are not requirements of the protocol.
 
@@ -67,7 +67,7 @@ These are design constraints, not aspirations. A change that breaks one of them 
 - Collaboration of records, not a central registration.
 - Endorsements and peer advocacy, not licenses or permits, as the trust signal.
 - The business vocabulary evolves from use. Designers do not own the language.
-- No structural counterparty. Two peers can bind a record without a platform standing between them.
+- No structural counterparty. Two identities can bind a record without a platform standing between them. The addresses they happen to hold are not the parties.
 - Success may be copied. This repository is AGPL-3.0 so network improvements stay available. The protocol is not a licensing business.
 
 ## Conceptual model the plan requires
@@ -114,13 +114,36 @@ Explicit and extensible. Initial set, not a closed list:
 
 `describes` · `involves` · `requests` · `offers` · `responds_to` · `references` · `supports` · `challenges` · `agrees_with` · `supersedes` · `results_in`
 
-### Three distinctions step 1 must settle
+### Distinctions
 
-| Distinction | Why it cannot stay fuzzy |
-|---|---|
-| Identity vs account vs peer | Keys, login accounts, and the party to a situation are different objects |
-| Object vs type | A roof repair is not the class "job-request" |
-| Reference vs ownership | Pointing at a record does not transfer it |
+Revised 2026-10-27. The open trio is closed. A device is not a peer. The peer is the address.
+
+**Decided**
+
+- A device is hardware. It holds keys. By itself it is not on the network.
+- A peer is the address a wide-area network assigns to a device. Usually that network is TCP/IP. The address is the peer.
+- An identity is one signing key. One key, one identity. What other people can check is the key, not the address.
+- An account is a child identity: its own key. It is not a username and not a login.
+- The same key, restored on a new device, is the same identity. The network assigns that device a new address, so the peer is new.
+- A signature over a hash does not prove possession of the file. A hash can be copied. If no one can produce the original, the claim is unproven either way. Holding the file is not an argument and not an agreement.
+- There is no MonkeyBusiness agreement yet.
+
+Until a later wording pass, the rest of this file sometimes says "peer" for the party to a situation. That party is the identity. The peer is the address.
+
+**Still to solve before `ontology-v0.1.md`**
+
+- Object versus type. What the first roof record is, if it is not a job class and not the situation itself. What a matcher may compare.
+- An agreement is either two signed records or one record signed by two keys. A named identity that never signs is not a party.
+- What a child-identity link authorizes. The parent key does not speak for the child.
+- One recovery seed can rebuild many keys. The seed is not an identity. How that sits beside one-key-one-identity is not written.
+
+**Left unsettled on purpose**
+
+- A new key, not a restored key, claiming an old identity. Later. Not step 1.
+- Default terms inside agreements: succession, arbitration, payment, custody. Downstream of a record both identities sign.
+- Who assigns an address when there is no ISP and no DHCP. The peer is an assigned address. The assigner is not specified, and it cannot be a registrar.
+- Enforcing who owns a file. The model can hold a claim and a challenge. It does not pick a winner.
+- What a screen may call settled. Display is local.
 
 ### What stays stable, and what does not
 
