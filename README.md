@@ -56,6 +56,12 @@ These are design constraints, not aspirations. A change that breaks one of them 
 - The situation is the unit of analysis. Ride-sharing, repair, rental, delivery, and a loan are applications of the same situation structure, not separate kernels.
 - Nothing in the model may assume that every request becomes an offer, every offer an agreement, or every agreement a completion.
 
+**Assent**
+
+- An offer may receive zero or more acceptance records.
+- An agreement becomes mutually assented to only when every required party has assented to the same agreement, or to its terms.
+- The model must represent incomplete assent, withdrawn assent, conflicting terms, and disputed claims without treating them as a completed contract.
+
 **MonkeyBusiness commitments**
 
 - No administrators and no gatekeepers. Participation does not depend on a registrar, a permit, or a platform account.
@@ -80,7 +86,7 @@ Three questions are different dimensions and must not be collapsed into one note
 | What is being asserted? | Fact, intention, requirement, observation, opinion, hypothetical |
 | What happened? | Event, response, acceptance, cancellation, payment, correction, dispute |
 
-An offer is an object. It contains assertions about price and availability. A later acceptance is an event that references it.
+An offer is an object. It contains assertions about price and availability. It may receive zero acceptance records, or many. An acceptance is its own record. It does not rewrite the offer. Mutual assent is not any one of those records.
 
 ### Layers
 
@@ -126,14 +132,14 @@ Revised 2026-10-27. Device is not an object in this model. It is the point of co
 - The same words with a different passphrase are a different seed and different identities. A new mnemonic is a new seed. Other peers cannot tell that two keys came from one seed unless some identity signs a record that says so. That record is not part of this layer.
 - Restoring the mnemonic restores the identities. The wide-area network still assigns the point of contact a new address, so the peer is new.
 - A signature over a hash does not prove possession of the file. A hash can be copied. If no one can produce the original, the claim is unproven either way. Holding the file is not an argument and not an agreement.
-- There is no MonkeyBusiness agreement yet.
+- There is no default MonkeyBusiness agreement. Terms bind only the identities that assent to them.
 
 Until a later wording pass, the rest of this file sometimes says "peer" for the party to a situation. That party is the identity. The peer is the network endpoint.
 
-**Still to solve before `ontology-v0.1.md`**
+**Still to solve before the lexicon is tested**
 
 - Object versus type. What the first roof record is, if it is not a job class and not the situation itself. What a matcher may compare.
-- An agreement is either two signed records or one record signed by two keys. A named identity that never signs is not a party.
+- Which identities are the required parties to a given agreement. Being named in someone else's record is not assent.
 
 **Left unsettled on purpose**
 
@@ -231,10 +237,10 @@ One thin slice, then the same slice in other domains:
 2. Another peer publishes an offer that references it.
 3. The first peer discovers and evaluates the offer.
 4. Both peers exchange signed records.
-5. The interaction ends in completion, cancellation, or dispute.
+5. The interaction may include completion, cancellation, withdrawn assent, or a dispute. More than one can be true. None of the incomplete cases is a completed contract.
 6. The simulator checks that every step was representable without application-specific code.
 
-Motivating situation: a roof repair. The customer requests repair and attaches photographs. Two roofers offer different prices and schedules. One offer expires before a response. The customer accepts the other. The work is completed, and the customer disputes the invoice. The model has to keep each peer's claims.
+Motivating situation: a roof repair. The customer describes the roof and attaches photographs. Two roofers offer different prices and schedules. Those offers conflict. Neither is an agreement. One offer expires with no acceptance. The customer accepts the other. That acceptance is one record. It is mutual assent only if every required party has assented to those same terms. The work can be completed, and the customer can still dispute the invoice. The dispute is not a completed contract, and it does not erase the assent already given.
 
 Repeat the same sequence for a ride, a rental, a freelance job, a delivery, and an equipment loan. A concept added for the roof is re-run against the others before it is kept.
 
