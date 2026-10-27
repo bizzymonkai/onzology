@@ -1,5 +1,5 @@
 # cli
 
-Placeholder for command interfaces.
+Command interfaces live here.
 
-Nothing here is built. Notention's CLI is disregarded for now.
+The interfaces are written for Onzology. Nothing here is built yet.

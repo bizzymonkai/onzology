@@ -1,5 +1,5 @@
 # agent
 
-Placeholder for agent interfaces.
+Agent interfaces live here.
 
-Nothing here is built. Notention's agent framework is disregarded for now.
+The interfaces are written for Onzology. Nothing here is built yet.

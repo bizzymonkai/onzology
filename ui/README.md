@@ -1,5 +1,5 @@
 # ui
 
-Placeholder for user-interface work.
+User-interface work lives here.
 
-Nothing here is built. Notention's UI is not imported, and its UI tests are disregarded.
+The interfaces are written for Onzology. Nothing here is built yet.
