@@ -2,22 +2,20 @@
 
 Onzology is the laboratory for the MonkeyBusiness conceptual ontology.
 
-MonkeyBusiness is the open, peer-to-peer business protocol: the conceptual system that has to describe real coordination without a platform in the middle. [Notention](https://github.com/autonull/notention9) is a candidate implementation and experimental tool. It is not the definition of the ontology, and its wire format is not the protocol.
+MonkeyBusiness is the open, peer-to-peer business protocol: the conceptual system that has to describe real coordination without a platform in the middle.
 
-This repository does not yet contain protocol code. It holds the plan, the baseline against Notention, and the rules for what may be reused. The next artifact is a tested conceptual model, not a user interface.
-
-Notention is useful because it already matches structured intent, keeps an editable vocabulary, and can run multi-agent scenarios. Onzology keeps that experimental method and does not inherit Notention's type hierarchy.
+This repository holds the plan and the working layout. [Notention](https://github.com/autonull/notention9) remains the starting point for semantic matching and for generalized object strategies. It is not the definition of the ontology, and its wire format is not the protocol. Its test suites, UI, command-line tool, and agent framework are disregarded.
 
 ## Status
 
 | Step | Work | State |
 |---|---|---|
-| 0 | Establish the baseline | Done. Inventory is below. Reviewed Notention `47075c86` (2026-10-26). |
-| 1 | Define the conceptual model | Next. `ontology-v0.1.md` and a concept registry. No UI. |
-| 2 | Adapt the semantic kernel | Not started. Adapters only after the model exists. |
-| 3 | Rebuild the simulator around situations | Not started. |
+| 0 | Establish the baseline | Done. Conclusion is below. Reviewed Notention `47075c86` (2026-10-26). |
+| 1 | Define the conceptual model | Started. The lexicon lives in [`ontology/`](ontology/). |
+| 2 | Adapt the semantic kernel | Not started. Matching and object strategy only. |
+| 3 | Simulator | Placeholder. [`simulator/`](simulator/) creates and tests situations. |
 | 4 | Test interoperability | Not started. |
-| 5 | Build the user-facing super-app | Not started. Blocked on the model surviving scenarios. |
+| 5 | User-facing interfaces | Not started. [`ui/`](ui/), [`agent/`](agent/), and [`cli/`](cli/) are placeholders. |
 
 Do not merge this work back over Notention, and do not replace Notention's specification. Onzology is a staged experiment.
 
@@ -174,93 +172,27 @@ The acceptance test: the same core model represents the new situation without an
 
 ## Baseline (step 0)
 
-Reviewed [autonull/notention9](https://github.com/autonull/notention9) at `47075c86e106ac0273021725e9db57abc553aaad` (2026-10-26, `main`). Installed with pnpm 9.15.9 on Node 22. Notention's own `README2.md` is a normative spec plus a status inventory. Several inventory rows do not match the tree. This section records what ran, not what the inventory claims.
+Reviewed [autonull/notention9](https://github.com/autonull/notention9) at `47075c86` (2026-10-26). The test inventory is not kept. What matters:
 
-### What ran
+- Conflicts in matching are workable. Notention's semantic matching and its generalized object strategy are the starting point. Its type hierarchy is not.
+- Conflicts in revision are real, and unresolved. Updating a private object is easy: it has not been published. Updating a network object is difficult: other identities may already have referenced it. Network garbage disposal is an open question. None of that is settled in this step.
+- Disregarded: Notention's test suites, UI, CLI, and agent framework.
 
-| Package | Tests | Build |
-|---|---|---|
-| `@notention/core` | 34 files, 251 tests passed | `tsc` failed. `core/src/network/nostr/relay.ts` imports `ws` with no type declarations |
-| `@notention/agent` | 4 files, 17 tests passed | `tsc` passed |
-| `@notention/cli` | 1 file, 6 tests passed | `tsc` failed on the same `ws` import, through core sources |
-| `simulator` | No unit suite. Playwright e2e not run | `tsc` and the studio UI build passed |
-| `@notention/ui` | Full `vitest run` died at the heap limit. File by file: 33 of 36 passed | Vite production build passed |
-
-UI failures that are real, not environmental:
-
-- `src/tests/App.test.tsx` — render throws. `upsertNote` is missing from the notes mock, then `agentService.isConnected` is not a function. The smoke test is behind the app.
-- `src/tests/plugins/MetaphorPlugin.test.tsx` — import of `components/metaphor/MetaphorRenderer` does not resolve.
-- `src/tests/components/EditorManager.test.tsx` — process ran out of memory before assertions. Not counted as a product failure.
-
-`pnpm test` at the root is not a reliable gate. The UI script is `vitest` without `run`, so it does not exit.
-
-### Reuse, after the license gate
-
-Worth adapting once upstream's license is actually granted. Do not copy the tree in before that. Notention's `package.json` files say MIT. `README2.md` says the license file is still to be added. There is no `LICENSE` file in the commit reviewed.
-
-| Piece | Why it is reusable | Limit |
-|---|---|---|
-| `MatchEngine` and `matchers.ts` | Constraint-against-fact scoring with reasons: string, number, date, enum, geo distance, aliases | Score is not the spec's required/total ratio. Numeric `is` is a silent 5% tolerance. String `is` falls through to substring at 0.8. Missing operators: `approx`, `in`, `inter`, `exists` |
-| Property parsers | Canonical `[key:op:value]`, symbolic, and word forms | Values are strings. Typed money, time, duration, and references are unspecified in the running code |
-| Ontology helpers | Alias index, traversal, local add/rename/merge | Helpers edit a tree in memory. They do not version or content-address a vocabulary |
-| Note privacy default | New notes start private | Spec says private notes are sealed and local data is encrypted at rest. The running README says the body is still published and encryption at rest is not provided |
-| Scenario runner shape | Named agents, timed events, shared matching core | See the simulator row under Replace |
-
-### Change before it can serve MonkeyBusiness
-
-| Notention today | What has to change |
-|---|---|
-| `createNote` assigns `crypto.randomUUID()` and later writes `updatedAt` on the same id | Records are immutable. A change is a new record that references the previous one. Identity is content-addressed |
-| `utils/inference.ts` only guesses string, number, or date | Lifecycle is inferred from later records, not stored as a status enum |
-| `README2.md` points at `utils/canonicalization.ts` and `inferState` | Neither exists. The inventory is not a source of truth |
-| Bare keys (`price`, `role`, `status`) in `domains.ts` | Inventory claims a `dsn:` namespace hardcoded in the ontology. The domains do not use it |
-| `job-request` extends `job` and `request` | Those parent nodes are not defined |
-| Four domain skill classes: Indeed, Craigslist, GitHub, Reminder | Inventory says five signed ontology skills. They are application adapters, and they are TypeScript classes |
-| Matching service treats a note as either the request or the offer | The protocol needs bidirectional claims, missing fields, and contradiction, not one score |
-
-### Do not inherit
-
-| Notention idea | Why it conflicts |
-|---|---|
-| The default ontology tree as the protocol | Entity, message, event, job-request, freelance-offer, product, and a `status` enum collapse object, assertion, and event. Channels are Slack, Teams, WhatsApp, Discord. That is an application vocabulary frozen in the kernel |
-| Fact / constraint / attestation / transition as the whole model | They are roles. Using them as the type system hides disputes, partial knowledge, and "both completion and dispute" |
-| "The developer maintains the language of the network" (`ARCHITECTURE.md`) | The vocabulary evolves from peers. A maintainer role is a gatekeeper |
-| Spec §9.5 token gating, "circle admin threshold", "higher-authority transition" | Permits and in-protocol authority. Trust is endorsement and challenge, not a gate or an admin |
-| Simulator as specified by its code | Every agent receives one `DEFAULT_ONTOLOGY`. Coordination is a WebSocket relay. Every agent of a role acts in lockstep. Chat is the literal string `Hello!` on a public event. Traits are unused. Scenarios are `publish_job`, `publish_offer`, and that chat. No expiration, acceptance, invoice, or dispute. A relay may exist later as an adapter under test. It is not the laboratory |
-| Kind 35000 property tags as the object format | Transport-specific encoding cannot be the protocol |
-| Price, budget, and rate as bare numbers | Money is untyped. A Bitcoin unit of account cannot be retrofitted onto an untyped float without lying about what matched |
-| `ARCHITECTURE.md` as current design | It still points matching at `utils/matching.ts`, the simulator at `SimulatorView.tsx`, and the score at matches/constraints. The code does not |
-
-### Spec that is written and not implemented
-
-Confirmed absent or unwired, not merely "partial" in the inventory:
-
-- Canonical CBOR, content-addressed note ids, protocol signing digest, verification procedure
-- Sealed envelopes. `privacy.ts` hashes tags. It does not seal
-- Transition, endorsement, invoice, payment, escrow, receipt, refund, revocation, and key-rotation records
-- Native peer id. Running identity is `nostr:` or `mesh:`
-- Bitcoin and BOLT-12 aliases. `pay.btc` / `pay.lightning` are types only
-- Circle keys, key rotation, social recovery
-- Mesh integration, libp2p, HTTP client binding
-- Tombstones (a `deletedAt` field is the current stand-in)
-- Realtime merge, trust graph, dispute and governance records
-- Conformance tests for canonicalization: 0 of 5. The core profile in §21 is not met
-
-Notention is usable as a local semantic notebook with request/offer matching. It is not a conforming implementation of its own protocol, and that protocol is not yet MonkeyBusiness.
+Notention code is not in this repository. It stays out until that project ships a license file and the terms are compatible with this one.
 
 ## Plan
 
 ### 0. Establish the baseline
 
-Done. Deliverable: the reuse / change / replace inventory above.
+Done. Deliverable: the conclusion above.
 
 ### 1. Define the conceptual model
 
-Create `ontology-v0.1.md` and a small machine-readable concept registry.
+Started. The evolving semantic lexicon is [`ontology/`](ontology/). Reusable situations go in [`ontology/known/`](ontology/known/).
 
-Do not import Notention's types. Define foundational objects and relationships, and how situations, claims, evidence, and events are represented.
+Do not import Notention's types. Do not treat a job class as the ontology.
 
-`ontology-v0.1.md` contains:
+The lexicon has to be able to say:
 
 1. Purpose and scope
 2. Foundational concepts
@@ -271,44 +203,25 @@ Do not import Notention's types. Define foundational objects and relationships, 
 7. Scenario test suite
 8. Revision procedure
 
-Deliverable: a tested conceptual model, not a new UI.
+Deliverable: a tested conceptual model. Not a user interface.
 
 ### 2. Adapt the semantic kernel
 
-Keep the matching engine, parser, ontology helpers, and validation only where they fit the model. Put adapters between the conceptual model and Notention's note objects.
-
-Notention's current wire format does not become the standard by default.
+Keep matching and the generalized object strategy only where they fit the lexicon. Notention's wire format does not become the standard.
 
 No upstream source is vendored until its license file exists and is compatible with this repository's AGPL-3.0.
 
-Deliverable: a small, independently testable core.
+### 3. Simulator
 
-### 3. Rebuild the simulator around situations
-
-Participants are independent peers. Each has its own information, preferences, and claims. Runs are replayable. The log records proposed ontology changes.
-
-For every scenario, record:
-
-1. Initial conditions — peers, resources, intentions, constraints, what each peer knows
-2. Published objects — what each peer asserts, requests, or offers
-3. Interpretation — how each object maps to the current ontology
-4. Matching — what was found, why, what is missing or contradictory
-5. Interaction — replies, negotiation, agreements, cancellations, other events
-6. Evaluation — whether the situation was representable, and which concept was missing
-
-The question is not "did the workflow succeed?" It is "could the ontology say what happened without a new application rule?"
-
-Deliverable: the ontology feedback laboratory.
+[`simulator/`](simulator/) is where situations are created and tested. It does not import Notention's simulator.
 
 ### 4. Test interoperability
 
 Two independent implementations publish, discover, reference, and interpret the same objects. Cases include a different transport, unfamiliar vocabulary, missing fields, conflicting claims, and incompatible ontology versions.
 
-Deliverable: a minimal conformance suite.
+### 5. Interfaces
 
-### 5. Build the user-facing super-app
-
-Only after the conceptual model survives the scenarios. Interface, identity experience, marketplace, messaging, media, and payments are applications of the protocol. They are not how the protocol is discovered.
+Only after the conceptual model survives the scenarios. [`ui/`](ui/), [`agent/`](agent/), and [`cli/`](cli/) are placeholders for those interfaces. They are applications of the protocol, not how the protocol is discovered.
 
 ## First experiment
 
@@ -329,26 +242,26 @@ That is the first milestone: a working laboratory, built from proven components 
 
 ## What will not be added early
 
-- A unified super-app, before step 5
+- A unified interface, before the lexicon survives a scenario
 - A required relay, indexer, or hosted agent
 - Token gates, admin roles, or permits
 - A native token, or a fee taken by the protocol
 - Domain skills hard-coded as classes
+- Notention's test suites, UI, CLI, or agent framework
 - A second status document that can drift from this one
-
-Until `ontology-v0.1.md` exists, this README is the only plan.
 
 ## Layout
 
-Nothing below exists yet. Step 1 creates the first two.
-
 ```text
-ontology-v0.1.md     conceptual model
-registry/            machine-readable concepts and relationships
-scenarios/           situation fixtures and their expected readings
+ontology/            evolving semantic lexicon
+ontology/known/      reusable situations
+simulator/           create and test situations
+ui/                  placeholder for interface work
+agent/               placeholder for agent interfaces
+cli/                 placeholder for command interfaces
 ```
 
-Adapters, a kernel, and a simulator come in steps 2 and 3. They are not sketched here in advance.
+`ui/`, `agent/`, and `cli/` do not import Notention. `simulator/` does not import Notention's simulator.
 
 ## License
 
