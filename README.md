@@ -40,7 +40,7 @@ These are design constraints, not aspirations. A change that breaks one of them 
 - The object and relationship model is independent of any note editor.
 - Ontology definitions are versioned, extensible, and tested on their own.
 - Transport encoding is an adapter. Nostr, mesh, HTTP, and local storage do not define the objects.
-- A device is hardware. A peer is the wide-area address the network assigns to that device, usually TCP/IP. An identity is one signing key. An account is a child identity, not a login. Objects stay distinct from all of those.
+- A peer is the wide-area network endpoint, usually the TCP/IP address assigned to the point of contact. An identity is one signing key. The main key is recovered from a [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) mnemonic. An account is a child key derived from that main key, not a login. Objects stay distinct from all of those.
 - A signature establishes who asserted something. It does not establish that the assertion is true.
 - Personal knowledge management, dashboards, browser agents, and marketplace screens are applications. They are not requirements of the protocol.
 
@@ -116,30 +116,31 @@ Explicit and extensible. Initial set, not a closed list:
 
 ### Distinctions
 
-Revised 2026-10-27. The open trio is closed. A device is not a peer. The peer is the address.
+Revised 2026-10-27. Device is not an object in this model. It is the point of contact for a peer. Key management is the identity layer.
 
 **Decided**
 
-- A device is hardware. It holds keys. By itself it is not on the network.
-- A peer is the address a wide-area network assigns to a device. Usually that network is TCP/IP. The address is the peer.
-- An identity is one signing key. One key, one identity. What other people can check is the key, not the address.
-- An account is a child identity: its own key. It is not a username and not a login.
-- The same key, restored on a new device, is the same identity. The network assigns that device a new address, so the peer is new.
+- A peer is a participant on the wide-area network, reached at the address that network assigns. Usually TCP/IP. The address is how the peer is reached. The device is only the point of contact.
+- Key management follows [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki). A mnemonic plus an optional passphrase is stretched with PBKDF2-HMAC-SHA512 for 2048 rounds into a 512-bit seed. [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) says that seed is what generates a deterministic wallet, by [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) or a method like it. The mnemonic, the passphrase, and the seed stay on the point of contact. Other peers never see them.
+- An identity is one signing key. One key, one identity. Other peers check the signature, not the address and not the mnemonic.
+- The main key is the [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) master key of the tree grown from that seed. The same mnemonic and the same passphrase restore the same main key on any point of contact.
+- An account is a child key derived from that main key. It is its own identity. It is not a login. Derivation is not authority: the main key does not sign for the account, and it cannot revoke it.
+- The same words with a different passphrase are a different seed and different identities. A new mnemonic is a new seed. Other peers cannot tell that two keys came from one seed unless some identity signs a record that says so. That record is not part of this layer.
+- Restoring the mnemonic restores the identities. The wide-area network still assigns the point of contact a new address, so the peer is new.
 - A signature over a hash does not prove possession of the file. A hash can be copied. If no one can produce the original, the claim is unproven either way. Holding the file is not an argument and not an agreement.
 - There is no MonkeyBusiness agreement yet.
 
-Until a later wording pass, the rest of this file sometimes says "peer" for the party to a situation. That party is the identity. The peer is the address.
+Until a later wording pass, the rest of this file sometimes says "peer" for the party to a situation. That party is the identity. The peer is the network endpoint.
 
 **Still to solve before `ontology-v0.1.md`**
 
 - Object versus type. What the first roof record is, if it is not a job class and not the situation itself. What a matcher may compare.
 - An agreement is either two signed records or one record signed by two keys. A named identity that never signs is not a party.
-- What a child-identity link authorizes. The parent key does not speak for the child.
-- One recovery seed can rebuild many keys. The seed is not an identity. How that sits beside one-key-one-identity is not written.
 
 **Left unsettled on purpose**
 
-- A new key, not a restored key, claiming an old identity. Later. Not step 1.
+- A signed association between two published keys that came from one seed. Local derivation already restores them. Publishing that they are related is a later choice.
+- A new mnemonic claiming an old identity. Later. Not step 1.
 - Default terms inside agreements: succession, arbitration, payment, custody. Downstream of a record both identities sign.
 - Who assigns an address when there is no ISP and no DHCP. The peer is an assigned address. The assigner is not specified, and it cannot be a registrar.
 - Enforcing who owns a file. The model can hold a claim and a challenge. It does not pick a winner.
