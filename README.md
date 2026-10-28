@@ -36,7 +36,6 @@ These are design constraints. A change lands when it satisfies every constraint 
 **How a definition is written**
 
 - A definition says what a thing is.
-- A sentence of the form "it is not X, it is Y" is published only after it is approved.
 
 **Protocol shape**
 
