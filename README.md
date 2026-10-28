@@ -63,8 +63,10 @@ These are design constraints. A change lands when it satisfies every constraint 
 
 **Assent**
 
-- An offer may receive zero or more acceptance records.
-- An agreement is two or more identities. Each has signed the same agreement, or the same terms. Those signers are the parties.
+- An offer is a proposal made by an identity. It may receive zero or more acceptance records.
+- An acceptance is a record of assent to an offer, and it references that offer.
+- An agreement is the terms and scope to which the parties assent. The scope names the parties.
+- A contract is an agreement for which all required parties have assented.
 - The model must represent incomplete assent, withdrawn assent, conflicting terms, and disputed claims without treating them as a completed contract.
 
 **MonkeyBusiness commitments**
@@ -87,11 +89,11 @@ Three questions stay separate dimensions:
 
 | Question | Examples |
 |---|---|
-| What is being described? | Person, resource, place, service, request, offer, agreement, situation |
+| What is being described? | Person, resource, place, service, request, offer, acceptance, agreement, contract, situation |
 | What is being asserted? | Fact, intention, requirement, observation, opinion, hypothetical |
 | What happened? | Event, response, acceptance, cancellation, payment, correction, dispute |
 
-An offer is an object. It contains assertions about price and availability. It may receive zero acceptance records, or many. An acceptance is its own record. Mutual assent is two or more identities each signing the same agreement, or the same terms.
+An offer is a proposal made by an identity. It contains assertions about price and availability. It may receive zero acceptance records, or many. An acceptance is a record of assent to that offer, and it references the offer. The agreement is the terms and scope. A contract is that agreement once every party the scope requires has assented.
 
 ### Layers
 
@@ -139,7 +141,7 @@ Revised 2026-10-27. The device is the point of contact for a peer. Key managemen
 - A signature over a hash says the signer asserted that hash. A hash can be copied. The file is shown by producing the original. Otherwise the claim stays open.
 - Terms bind only the identities that assent to them.
 - The first roof record is an object. A matcher compares its tokens. Strict comparison of `type` to `type` is allowed, and optional. An object with `type:foo` matches every index of the token `foo`, whatever key holds that token. `type:bar` against an index entry `type:bar` is a higher-certainty match. An object with no `type` property matches on its other tokens.
-- An agreement is two or more identities. Each has signed the same agreement, or the same terms. Those signers are the parties.
+- An offer is a proposal made by an identity. An acceptance is a record of assent that references that offer. An agreement is the terms and scope to which the parties assent. A contract is an agreement for which all required parties have assented.
 
 Until a later wording pass, the rest of this file sometimes says "peer" for the party to a situation. That party is the identity. The peer is the network endpoint.
 
@@ -239,10 +241,10 @@ One thin slice, then the same slice in other domains:
 2. Another peer publishes an offer that references it.
 3. The first peer discovers and evaluates the offer.
 4. Both peers exchange signed records.
-5. The interaction may include completion, cancellation, withdrawn assent, or a dispute. More than one can be true. A completed contract is two or more identities that have each signed the same agreement, or the same terms.
+5. The interaction may include completion, cancellation, withdrawn assent, or a dispute. More than one can be true. A contract is an agreement for which all required parties have assented.
 6. The simulator checks that the lexicon already had the words for every step.
 
-Motivating situation: a roof repair. The customer describes the roof and attaches photographs. Two roofers offer different prices and schedules. Those offers conflict. Each offer is its own record. One offer expires with zero acceptances. The customer accepts the other. That acceptance is one signature. The roofer's offer is the other. Those two identities, on the same terms, are the parties. The work can be completed, and the customer can still dispute the invoice. The dispute is a claim about the invoice. Assent already given stays on the record.
+Motivating situation: a roof repair. The customer describes the roof and attaches photographs. Two roofers each make an offer. Those offers conflict. One offer expires with zero acceptances. The customer publishes an acceptance that references the other offer. The agreement is the terms and scope of that offer. It is a contract when every party that scope requires has assented. The work can be completed, and the customer can still dispute the invoice. The dispute is a claim about the invoice. Assent already given stays on the record.
 
 Repeat the same sequence for a ride, a rental, a freelance job, a delivery, and an equipment loan. A concept added for the roof is re-run against the others before it is kept.
 
